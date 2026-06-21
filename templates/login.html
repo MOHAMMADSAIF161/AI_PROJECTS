@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Companion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #16213e;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h2 { color: #4CAF50; }
+        .container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(76,175,80,0.2);
+            border: 1px solid #2a2a4a;
+        }
+        .orb {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4CAF50, #1a1a2e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 30px rgba(76,175,80,0.5);
+        }
+        h3 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+        .form-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #0d1117;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        input:focus { border-color: #4CAF50; }
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .login-btn:hover { background: #45a049; }
+        .divider { text-align: center; margin: 15px 0; color: #555; font-size: 14px; }
+        .google-btn {
+            width: 100%;
+            padding: 13px;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .google-btn:hover { background: #f5f5f5; }
+        .link {
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        .link a { color: #4CAF50; text-decoration: none; }
+        .link a:hover { text-decoration: underline; }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="header">
+        <h2>🤖 AI Companion</h2>
+        <button id="theme-btn" onclick="toggleTheme()" style="background:#2a2a4a; border:1px solid #444; color:white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">☀️ Light</button>
+    </div>
+    <div class="container">
+        <div class="card">
+            <div class="orb">🤖</div>
+            <h3>Welcome Back!</h3>
+            <form method="POST" action="/login">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            <div class="divider">— or —</div>
+            <a href="/login/google" class="google-btn">
+                <img src="https://developers.google.com/identity/images/g-logo.png" width="20">
+                Continue with Google
+            </a>
+            <div class="link">
+                Don't have an account? <a href="/register">Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLight = localStorage.getItem('theme') === 'light';
+
+        function applyTheme() {
+            if (isLight) {
+                document.body.classList.add('light');
+                const btn = document.getElementById('theme-btn');
+                if (btn) btn.innerText = '🌙 Dark';
+            } else {
+                document.body.classList.remove('light');
+                const btn = document.getElementById('theme-btn');
+                if (btn) btn.innerText = '☀️ Light';
+            }
+        }
+
+        function toggleTheme() {
+            isLight = !isLight;
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            applyTheme();
+        }
+
+        applyTheme();
+    </script>
+</body>
+</html>

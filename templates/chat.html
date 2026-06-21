@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Companion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #1a1a2e; color: white; height: 100vh; display: flex; flex-direction: column; }
+        .header { background: #16213e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h2 { color: #4CAF50; }
+        .header-btns { display: flex; gap: 10px; align-items: center; }
+        .end-btn { background: #f44336; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-size: 14px; }
+        .code-toggle-btn { background: #007bff; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-size: 14px; }
+        .toggle-btn { background: #2a2a4a; border: 1px solid #444; color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; }
+        .camera-controls { display: flex; gap: 12px; justify-content: center; margin-top: 5px; }
+        .cam-btn { background: #4CAF50; color: white; border: none; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 11px; }
+        .cam-btn.off { background: #555; }
+        .mic-toggle-btn { background: #4CAF50; color: white; border: none; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 11px; }
+        .mic-toggle-btn.muted { background: #f44336; }
+        .main { display: flex; flex: 1; padding: 20px; gap: 20px; overflow: hidden; }
+        .camera-side { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .camera-box { width: 100%; max-width: 400px; aspect-ratio: 4/3; background: #0d0d0d; border-radius: 15px; overflow: hidden; position: relative; border: 2px solid #333; }
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .camera-off-screen { width: 100%; height: 100%; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 10px; background: #0d0d0d; }
+        .camera-off-screen .cam-off-icon { font-size: 50px; }
+        .camera-off-screen p { color: #555; font-size: 14px; }
+        .camera-label { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 10px; font-size: 13px; }
+        .ai-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+        .orb { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle, #4CAF50, #1a1a2e); display: flex; align-items: center; justify-content: center; font-size: 45px; box-shadow: 0 0 30px rgba(76,175,80,0.5); transition: all 0.3s; }
+        .orb.listening { background: radial-gradient(circle, #FF9800, #1a1a2e); box-shadow: 0 0 50px rgba(255,152,0,0.7); animation: pulse 1s infinite; }
+        .orb.thinking { background: radial-gradient(circle, #2196F3, #1a1a2e); box-shadow: 0 0 50px rgba(33,150,243,0.7); }
+        .orb.muted { background: radial-gradient(circle, #f44336, #1a1a2e); box-shadow: 0 0 30px rgba(244,67,54,0.5); }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .ai-label { color: #aaa; font-size: 14px; }
+        .mic-status { background: #f44336; color: white; padding: 5px 15px; border-radius: 20px; font-size: 13px; display: none; }
+        .mic-status.visible { display: block; }
+        .code-side { flex: 1.2; display: flex; flex-direction: column; background: #0d1117; border-radius: 15px; overflow: hidden; border: 2px solid #333; display: none; }
+        .code-side.visible { display: flex; }
+        .code-header { background: #161b22; padding: 10px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #333; }
+        .code-header select { background: #21262d; color: white; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; font-size: 13px; }
+        .code-header .submit-btn { background: #4CAF50; color: white; border: none; padding: 6px 20px; border-radius: 5px; cursor: pointer; font-size: 13px; margin-left: auto; }
+        .code-header .run-btn { background: #007bff; color: white; border: none; padding: 6px 20px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+        textarea#code { flex: 1; background: #0d1117; color: #c9d1d9; border: none; padding: 15px; font-family: 'Courier New', monospace; font-size: 13px; resize: none; outline: none; line-height: 1.6; }
+        .code-output { height: 120px; background: #010409; color: #4CAF50; padding: 10px 15px; font-family: 'Courier New', monospace; font-size: 12px; overflow-y: auto; border-top: 1px solid #333; white-space: pre-wrap; }
+        .bottom { background: #16213e; padding: 15px 20px; text-align: center; }
+        .status { font-size: 15px; color: #aaa; margin-bottom: 8px; }
+        .text-box { background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 10px; font-size: 14px; line-height: 1.6; min-height: 50px; max-width: 800px; margin: 0 auto; }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="header">
+        <h2>🤖 AI Companion</h2>
+        <div id="timer" style="color:#4CAF50; font-size:16px; font-weight:bold;">⏱ 00:00:00</div>
+        <div class="header-btns">
+            <input type="file" id="resume-file" accept=".pdf" style="display:none;" onchange="uploadResume()">
+            <button class="code-toggle-btn" onclick="document.getElementById('resume-file').click()">📄 Resume</button>
+            <button class="code-toggle-btn" onclick="toggleCode()">💻 Code Panel</button>
+            <button id="theme-btn" class="toggle-btn" onclick="toggleTheme()">☀️ Light</button>
+            <button class="end-btn" onclick="endSession()">End Session</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="camera-side">
+            <div class="camera-box">
+                <video id="video" autoplay playsinline></video>
+                <div class="camera-off-screen" id="camera-off-screen">
+                    <div class="cam-off-icon">📷</div>
+                    <p>Camera is off</p>
+                </div>
+                <div class="camera-label">📹 You</div>
+            </div>
+            <div class="camera-controls">
+                <button class="cam-btn" id="cam-btn" onclick="toggleCamera()">📹 Camera On</button>
+                <button class="mic-toggle-btn" id="mic-toggle-btn" onclick="toggleMic()">🎤 Mic On</button>
+            </div>
+        </div>
+
+        <div class="ai-side">
+            <div class="orb" id="orb">🤖</div>
+            <div class="ai-label">AI Companion</div>
+            <div class="mic-status" id="mic-status">🔇 Mic Muted</div>
+        </div>
+
+        <div class="code-side" id="code-side">
+            <div class="code-header">
+                <select id="language" onchange="setTemplate()">
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="javascript">JavaScript</option>
+                </select>
+                <button class="run-btn" onclick="runCode()">▶ Run</button>
+                <button class="submit-btn" onclick="submitCode()">✅ Submit to AI</button>
+            </div>
+            <textarea id="code" spellcheck="false" placeholder="Write your code here..."></textarea>
+            <div class="code-output" id="code-output">Output will appear here...</div>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="status" id="status">Starting up...</div>
+        <div class="text-box" id="text-box">Getting ready...</div>
+    </div>
+
+    <script>
+        let recognition;
+        let synth = window.speechSynthesis;
+        let finalTranscript = '';
+        let isAISpeaking = false;
+        let isProcessing = false;
+        let audioContext, analyser, microphone;
+        let isSpeaking = false;
+        let silenceStart = null;
+        const SILENCE_THRESHOLD = 15;
+        const SILENCE_DURATION = 2500;
+        let codePanelVisible = false;
+        let cameraOn = true;
+        let micOn = true;
+        let cameraStream = null;
+        let seconds = 0;
+        let timerInterval;
+        let isLight = localStorage.getItem('theme') === 'light';
+
+        // Theme
+        function applyTheme() {
+            if (isLight) {
+                document.body.classList.add('light');
+                const btn = document.getElementById('theme-btn');
+                if (btn) btn.innerText = '🌙 Dark';
+            } else {
+                document.body.classList.remove('light');
+                const btn = document.getElementById('theme-btn');
+                if (btn) btn.innerText = '☀️ Light';
+            }
+        }
+
+        function toggleTheme() {
+            isLight = !isLight;
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            applyTheme();
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+                const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+                const s = String(seconds % 60).padStart(2, '0');
+                document.getElementById('timer').innerText = `⏱ ${h}:${m}:${s}`;
+            }, 1000);
+        }
+
+        // Camera Toggle
+        function toggleCamera() {
+            const video = document.getElementById('video');
+            const offScreen = document.getElementById('camera-off-screen');
+            const btn = document.getElementById('cam-btn');
+            if (cameraOn) {
+                video.style.display = 'none';
+                offScreen.style.display = 'flex';
+                btn.textContent = '📷 Camera Off';
+                btn.classList.add('off');
+                if (cameraStream) cameraStream.getVideoTracks().forEach(t => t.enabled = false);
+                cameraOn = false;
+            } else {
+                video.style.display = 'block';
+                offScreen.style.display = 'none';
+                btn.textContent = '📹 Camera On';
+                btn.classList.remove('off');
+                if (cameraStream) cameraStream.getVideoTracks().forEach(t => t.enabled = true);
+                cameraOn = true;
+            }
+        }
+
+        // Mic Toggle
+        function toggleMic() {
+            const btn = document.getElementById('mic-toggle-btn');
+            const micStatus = document.getElementById('mic-status');
+            if (micOn) {
+                micOn = false;
+                btn.textContent = '🔇 Mic Off';
+                btn.classList.add('muted');
+                micStatus.classList.add('visible');
+                if (recognition) recognition.stop();
+                setUI('muted', '🔇', '🔇 Mic is muted');
+            } else {
+                micOn = true;
+                btn.textContent = '🎤 Mic On';
+                btn.classList.remove('muted');
+                micStatus.classList.remove('visible');
+                if (!isAISpeaking && !isProcessing) {
+                    recognition.start();
+                    setUI('listening', '🎤', '🎤 Your turn — speak!', '');
+                }
+            }
+        }
+
+        // Code Panel
+        const templates = {
+            python: `# Python Code\nprint("Hello, World!")`,
+            java: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`,
+            c: `#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}`,
+            cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}`,
+            javascript: `console.log("Hello, World!");`
+        };
+
+        const langVersions = {
+            python: { language: 'python', version: '3.10.0' },
+            java: { language: 'java', version: '15.0.2' },
+            c: { language: 'c', version: '10.2.0' },
+            cpp: { language: 'c++', version: '10.2.0' },
+            javascript: { language: 'javascript', version: '18.15.0' }
+        };
+
+        function toggleCode() {
+            codePanelVisible = !codePanelVisible;
+            document.getElementById('code-side').classList.toggle('visible', codePanelVisible);
+            if (codePanelVisible) setTemplate();
+        }
+
+        function setTemplate() {
+            const lang = document.getElementById('language').value;
+            document.getElementById('code').value = templates[lang];
+        }
+
+        async function runCode() {
+            const lang = document.getElementById('language').value;
+            const code = document.getElementById('code').value;
+            const outputBox = document.getElementById('code-output');
+            outputBox.innerText = 'Running...';
+            outputBox.style.color = '#aaa';
+            try {
+                const res = await fetch('/run-code', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        language: langVersions[lang].language,
+                        version: langVersions[lang].version,
+                        files: [{ content: code }]
+                    })
+                });
+                const data = await res.json();
+                const output = data.run.output || '';
+                const stderr = data.run.stderr || '';
+                if (stderr) {
+                    outputBox.innerText = '❌ ' + stderr;
+                    outputBox.style.color = '#f44336';
+                } else {
+                    outputBox.innerText = '✅ ' + output;
+                    outputBox.style.color = '#4CAF50';
+                }
+            } catch (err) {
+                outputBox.innerText = '❌ Network error';
+                outputBox.style.color = '#f44336';
+            }
+        }
+
+        async function submitCode() {
+            const lang = document.getElementById('language').value;
+            const code = document.getElementById('code').value;
+            if (!code.trim()) { speak("Please write some code first."); return; }
+            sendMessage(`Please evaluate this ${lang} code:\n\n${code}`);
+        }
+
+        async function uploadResume() {
+            const file = document.getElementById('resume-file').files[0];
+            if (!file) return;
+            speak("Please wait, I am reading your resume.");
+            const formData = new FormData();
+            formData.append('resume', file);
+            try {
+                const res = await fetch('/upload-resume', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    setTimeout(() => speak(data.message), 3000);
+                } else {
+                    speak("Sorry, I could not read your resume.");
+                }
+            } catch(err) {
+                speak("Error uploading resume. Please try again.");
+            }
+        }
+
+        // Camera
+        async function startCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                document.getElementById('video').srcObject = cameraStream;
+            } catch (err) { console.log('Camera error:', err); }
+        }
+
+        // VAD
+        async function startVAD() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioContext = new AudioContext();
+            analyser = audioContext.createAnalyser();
+            microphone = audioContext.createMediaStreamSource(stream);
+            analyser.fftSize = 512;
+            microphone.connect(analyser);
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            function check() {
+                if (!isAISpeaking && !isProcessing && micOn) {
+                    analyser.getByteFrequencyData(dataArray);
+                    const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+                    if (avg > SILENCE_THRESHOLD) {
+                        if (!isSpeaking) { isSpeaking = true; silenceStart = null; setUI('listening', '🎤', '🎤 Listening...'); }
+                    } else if (isSpeaking) {
+                        if (!silenceStart) silenceStart = Date.now();
+                        else if (Date.now() - silenceStart > SILENCE_DURATION && finalTranscript.trim()) {
+                            isSpeaking = false; silenceStart = null;
+                            const msg = finalTranscript.trim(); finalTranscript = '';
+                            sendMessage(msg);
+                        }
+                    }
+                }
+                requestAnimationFrame(check);
+            }
+            check();
+        }
+
+        function setupRecognition() {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.onresult = function(e) {
+                if (isAISpeaking || isProcessing || !micOn) return;
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+                }
+                document.getElementById('text-box').innerText = '🗣️ ' + finalTranscript;
+            };
+            recognition.onerror = function(e) {
+                if (e.error === 'no-speech') { recognition.stop(); if (micOn) recognition.start(); }
+            };
+            recognition.onend = function() {
+                if (!isAISpeaking && !isProcessing && micOn) recognition.start();
+            };
+        }
+
+        function setUI(state, emoji, status, text) {
+            const orb = document.getElementById('orb');
+            orb.className = 'orb ' + (state || '');
+            orb.innerText = emoji || '🤖';
+            document.getElementById('status').innerText = status || '';
+            if (text !== undefined) document.getElementById('text-box').innerText = text;
+        }
+
+        function speak(text, callback) {
+            isAISpeaking = true; isProcessing = true;
+            isSpeaking = false; silenceStart = null; finalTranscript = '';
+            if (recognition) recognition.stop();
+            synth.cancel();
+            setUI('', '🤖', '🤖 AI is speaking...', '🤖 ' + text);
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US'; u.rate = 0.9; u.pitch = 1;
+            u.onend = function() {
+                setTimeout(() => {
+                    isAISpeaking = false; isProcessing = false;
+                    finalTranscript = ''; isSpeaking = false; silenceStart = null;
+                    if (micOn) {
+                        setUI('listening', '🎤', '🎤 Your turn — speak!', '');
+                        recognition.start();
+                    } else {
+                        setUI('muted', '🔇', '🔇 Mic is muted', '');
+                    }
+                    if (callback) callback();
+                }, 1000);
+            };
+            synth.speak(u);
+        }
+
+        async function sendMessage(message) {
+            isProcessing = true;
+            if (recognition) recognition.stop();
+            setUI('thinking', '⏳', 'Thinking...', '');
+            const res = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message})
+            });
+            const data = await res.json();
+            isProcessing = false;
+            speak(data.reply);
+        }
+
+        function endSession() {
+            synth.cancel();
+            clearInterval(timerInterval);
+            if (recognition) recognition.stop();
+            if (audioContext) audioContext.close();
+            if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+            window.location.href = '/dashboard';
+        }
+
+        // SINGLE window.onload
+        window.onload = async function() {
+            applyTheme();
+            startTimer();
+            await startCamera();
+            setupRecognition();
+            await startVAD();
+            speak("Hey! Great to meet you. I'm your AI companion. You can talk to me about anything, or use the code panel to write and submit code for review. What would you like to do today?");
+        };
+    </script>
+</body>
+</html>

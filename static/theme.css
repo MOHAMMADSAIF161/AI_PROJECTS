@@ -1,0 +1,233 @@
+/* Light Theme */
+body.light {
+    background: #f0f2f5 !important;
+    color: #333 !important;
+}
+body.light .header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #ddd;
+}
+body.light .header h2 { color: #4CAF50 !important; }
+body.light .card {
+    background: #ffffff !important;
+    border-color: #ddd !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+}
+body.light .welcome-card {
+    background: #ffffff !important;
+    border-color: #ddd !important;
+}
+body.light .option-card {
+    background: #ffffff !important;
+    border-color: #ddd !important;
+}
+body.light .option-card h4 { color: #2e7d32 !important; }
+body.light .assistant-side {
+    background: #ffffff !important;
+    border-color: #ddd !important;
+}
+body.light .assistant-header {
+    background: #f5f5f5 !important;
+    border-color: #ddd !important;
+}
+body.light .assistant-header h4 { color: #2e7d32 !important; }
+body.light .ai-msg {
+    background: #f5f5f5 !important;
+    color: #333 !important;
+}
+body.light .user-msg {
+    background: #e3f2fd !important;
+    color: #333 !important;
+}
+body.light .bottom {
+    background: #ffffff !important;
+    border-top: 1px solid #ddd !important;
+}
+body.light .text-box {
+    background: rgba(0,0,0,0.05) !important;
+    color: #333 !important;
+}
+body.light .status { color: #555 !important; }
+body.light .toggle-btn {
+    background: #e0e0e0 !important;
+    color: #333 !important;
+    border-color: #ccc !important;
+}
+body.light #timer { color: #2e7d32 !important; }
+body.light input {
+    background: #f5f5f5 !important;
+    color: #333 !important;
+    border-color: #ddd !important;
+}
+body.light h3 { color: #2e7d32 !important; }
+body.light label { color: #555 !important; }
+body.light .code-side {
+    background: #ffffff !important;
+    border-color: #ddd !important;
+}
+body.light .code-header { background: #f5f5f5 !important; }
+body.light textarea#code {
+    background: #ffffff !important;
+    color: #333 !important;
+}
+body.light .code-output {
+    background: #f5f5f5 !important;
+    color: #2e7d32 !important;
+}
+body.light .orb {
+    background: radial-gradient(circle, #4CAF50, #f0f2f5) !important;
+}
+body.light .mini-orb {
+    background: radial-gradient(circle, #4CAF50, #f0f2f5) !important;
+}
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Large screens (desktops > 1200px) */
+@media (max-width: 1200px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .preview-grid { gap: 25px; }
+    .hero h2 { font-size: 40px; }
+}
+
+/* Tablets (768px - 1024px) */
+@media (max-width: 1024px) {
+    /* Welcome */
+    .hero h2 { font-size: 34px; }
+    .hero p { font-size: 16px; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .preview-grid { grid-template-columns: 1fr; }
+    .steps { gap: 15px; }
+
+    /* Dashboard */
+    .container { flex-direction: column; padding: 15px; }
+    .assistant-side { width: 100%; }
+
+    /* Chat */
+    .main { flex-direction: column; }
+    .camera-side { width: 100%; align-items: center; }
+    .ai-side { width: 100%; }
+    .camera-box { max-width: 100%; }
+    .code-side { width: 100% !important; }
+}
+
+/* Mobile landscape & small tablets (481px - 768px) */
+@media (max-width: 768px) {
+    /* Navbar */
+    .navbar { padding: 10px 15px; flex-wrap: wrap; gap: 10px; }
+    .navbar h1, .navbar h2 { font-size: 16px; }
+    .nav-btns { gap: 8px; }
+    .btn-login, .btn-started { padding: 6px 12px; font-size: 12px; }
+
+    /* Hero */
+    .hero { padding: 80px 15px 40px; }
+    .hero h2 { font-size: 26px; }
+    .hero p { font-size: 14px; }
+    .hero-btns { flex-direction: column; align-items: center; gap: 12px; }
+    .hero-btn-main, .hero-btn-secondary { width: 100%; max-width: 300px; text-align: center; padding: 12px 20px; font-size: 16px; }
+    .hero-orb { width: 90px; height: 90px; font-size: 35px; }
+
+    /* Features */
+    .features { padding: 50px 15px; }
+    .features-grid { grid-template-columns: 1fr; gap: 15px; }
+    .section-title { font-size: 24px; }
+    .section-subtitle { font-size: 14px; }
+
+    /* How it works */
+    .how-it-works { padding: 50px 15px; }
+    .steps { flex-direction: column; align-items: center; }
+    .step-arrow { transform: rotate(90deg); margin: 5px 0; }
+
+    /* Preview */
+    .preview { padding: 50px 15px; }
+    .preview-grid { grid-template-columns: 1fr; gap: 20px; }
+    .preview-text h3 { font-size: 22px; }
+
+    /* CTA */
+    .cta { padding: 50px 15px; }
+    .cta h2 { font-size: 26px; }
+
+    /* Login/Register */
+    .header { padding: 10px 15px; flex-wrap: wrap; gap: 8px; }
+    .header h2 { font-size: 16px; }
+    .card { margin: 10px; padding: 25px 20px; }
+    .container { padding: 10px; }
+
+    /* Dashboard */
+    .container { flex-direction: column; padding: 10px; gap: 15px; }
+    .assistant-side { width: 100%; }
+    .left-side { width: 100%; }
+    .welcome-card { padding: 15px; }
+    .option-card { padding: 20px; }
+    .option-card .icon { font-size: 40px; }
+    .option-card h4 { font-size: 16px; }
+
+    /* Chat Page */
+    .main { flex-direction: column; padding: 10px; gap: 10px; }
+    .camera-side { width: 100%; }
+    .ai-side { width: 100%; padding: 10px 0; }
+    .camera-box { max-width: 100%; aspect-ratio: 4/3; }
+    .orb { width: 90px; height: 90px; font-size: 30px; }
+    .header-btns { gap: 5px; flex-wrap: wrap; }
+    .code-toggle-btn { padding: 6px 10px; font-size: 11px; }
+    .end-btn { padding: 6px 10px; font-size: 11px; }
+    #timer { font-size: 12px; }
+    .bottom { padding: 10px 15px; }
+    .text-box { font-size: 13px; padding: 10px 15px; }
+    .code-side { width: 100% !important; }
+    .camera-controls { gap: 8px; }
+    .cam-btn, .mic-toggle-btn { font-size: 10px; padding: 4px 10px; }
+}
+
+/* Mobile portrait (< 480px) */
+@media (max-width: 480px) {
+    /* Navbar */
+    .navbar h1 { font-size: 14px; }
+    .btn-login, .btn-started { padding: 5px 10px; font-size: 11px; }
+
+    /* Hero */
+    .hero h2 { font-size: 22px; }
+    .hero p { font-size: 13px; }
+    .hero-orb { width: 70px; height: 70px; font-size: 28px; }
+
+    /* Features */
+    .feature-card { padding: 20px 15px; }
+    .feature-icon { font-size: 35px; }
+    .feature-card h3 { font-size: 16px; }
+    .feature-card p { font-size: 13px; }
+
+    /* Login/Register */
+    .card { padding: 20px 15px; }
+    .orb { width: 60px; height: 60px; font-size: 25px; }
+    h3 { font-size: 18px; }
+    input { padding: 10px 12px; font-size: 14px; }
+    .login-btn, .register-btn { padding: 11px; font-size: 14px; }
+
+    /* Dashboard */
+    .welcome-card h3 { font-size: 18px; }
+    .option-card { padding: 15px; }
+    .option-btn { padding: 10px 25px; font-size: 14px; }
+    .mini-orb { width: 60px; height: 60px; font-size: 22px; }
+    .msg { font-size: 12px; padding: 8px 10px; }
+    .mic-btn { width: 40px; height: 40px; font-size: 16px; }
+
+    /* Chat */
+    .orb { width: 70px; height: 70px; font-size: 25px; }
+    .header h2 { font-size: 13px; }
+    #timer { font-size: 11px; }
+    .code-toggle-btn, .end-btn { padding: 5px 8px; font-size: 10px; }
+    .status { font-size: 13px; }
+    .text-box { font-size: 12px; }
+
+    /* Welcome page steps */
+    .step { min-width: 150px; }
+    .step-number { width: 45px; height: 45px; font-size: 18px; }
+}
+
+/* Very small screens (< 360px) */
+@media (max-width: 360px) {
+    .hero h2 { font-size: 18px; }
+    .navbar h1 { font-size: 12px; }
+    .card { margin: 5px; padding: 15px 10px; }
+    .header-btns { gap: 3px; }
+    .code-toggle-btn, .end-btn { padding: 4px 6px; font-size: 9px; }
+}

@@ -1,0 +1,7 @@
+﻿project/
+__pycache__/
+*.pyc
+.env
+*.db
+instance/
+ngrok-v3-stable-windows-amd64/

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Companion - Your Smart Learning Partner</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #1a1a2e; color: white; }
+
+        /* Header */
+        .navbar {
+            background: #16213e;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .navbar h1 { color: #4CAF50; font-size: 22px; }
+        .nav-btns { display: flex; gap: 15px; }
+        .btn-login {
+            background: transparent;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+            padding: 8px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-login:hover { background: #4CAF50; color: white; }
+        .btn-started {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-started:hover { background: #45a049; }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 60px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        .hero-content { max-width: 800px; }
+        .hero-orb {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4CAF50, #1a1a2e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 30px;
+            box-shadow: 0 0 50px rgba(76,175,80,0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100% { transform: scale(1); box-shadow: 0 0 50px rgba(76,175,80,0.5); } 50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(76,175,80,0.8); } }
+        .hero h2 { font-size: 48px; margin-bottom: 20px; color: white; }
+        .hero h2 span { color: #4CAF50; }
+        .hero p { font-size: 18px; color: #aaa; margin-bottom: 40px; line-height: 1.8; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .hero-btn-main {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(76,175,80,0.4);
+        }
+        .hero-btn-main:hover { background: #45a049; transform: translateY(-3px); }
+        .hero-btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .hero-btn-secondary:hover { background: white; color: #1a1a2e; transform: translateY(-3px); }
+
+        /* Features Section */
+        .features {
+            padding: 80px 40px;
+            background: #16213e;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: 16px;
+            margin-bottom: 50px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: #0d1117;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #2a2a4a;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .feature-card:hover {
+            border-color: #4CAF50;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(76,175,80,0.2);
+        }
+        .feature-icon { font-size: 50px; margin-bottom: 20px; }
+        .feature-card h3 { color: #4CAF50; font-size: 20px; margin-bottom: 12px; }
+        .feature-card p { color: #aaa; font-size: 14px; line-height: 1.7; }
+
+        /* How it works */
+        .how-it-works {
+            padding: 80px 40px;
+            background: #1a1a2e;
+        }
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .step {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            max-width: 220px;
+        }
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+        .step h4 { color: white; font-size: 16px; margin-bottom: 8px; }
+        .step p { color: #aaa; font-size: 13px; line-height: 1.6; }
+        .step-arrow {
+            font-size: 30px;
+            color: #4CAF50;
+            align-self: center;
+            margin-top: -30px;
+        }
+
+        /* Dashboard Preview */
+        .preview {
+            padding: 80px 40px;
+            background: #16213e;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+            align-items: center;
+        }
+        .preview-text h3 { color: #4CAF50; font-size: 28px; margin-bottom: 15px; }
+        .preview-text p { color: #aaa; font-size: 15px; line-height: 1.8; margin-bottom: 20px; }
+        .preview-features { list-style: none; }
+        .preview-features li {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .preview-features li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+        .preview-box {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #2a2a4a;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .preview-box .preview-icon { font-size: 60px; }
+        .preview-box p { color: #aaa; font-size: 14px; text-align: center; }
+
+        /* CTA Section */
+        .cta {
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #0f3460, #16213e);
+        }
+        .cta h2 { font-size: 36px; margin-bottom: 15px; }
+        .cta h2 span { color: #4CAF50; }
+        .cta p { color: #aaa; font-size: 16px; margin-bottom: 40px; }
+
+        /* Footer */
+        .footer {
+            background: #0d1117;
+            padding: 30px 40px;
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+        }
+        .footer span { color: #4CAF50; }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="/" style="text-decoration:none; cursor:pointer;">
+        <h1 style="color:#4CAF50;">🤖 AI Companion</h1>
+    </a>
+    <div class="nav-btns">
+        <a href="/login" class="btn-login">Login</a>
+        <a href="/register" class="btn-started">Get Started</a>
+    </div>
+</nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-orb">🤖</div>
+            <h2>Your Smart <span>AI Learning</span> Partner</h2>
+            <p>Experience the future of learning with real-time voice conversations, AI-powered interviews, code compilation, and resume analysis — all in one place.</p>
+            <div class="hero-btns">
+                <a href="/register" class="hero-btn-main">🚀 Get Started Free</a>
+                <a href="/login" class="hero-btn-secondary">Login</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h2 class="section-title">What Can AI Companion Do?</h2>
+        <p class="section-subtitle">Everything you need to prepare for your career and improve your skills</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎤</div>
+                <h3>Voice AI Conversation</h3>
+                <p>Have natural real-time voice conversations with AI about any topic — technology, science, history, medicine and more. Just speak and AI responds instantly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📹</div>
+                <h3>Real-Time Camera</h3>
+                <p>Practice interviews with your camera on just like a real interview setting. See yourself while the AI interviews you for a complete experience.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Resume Analysis</h3>
+                <p>Upload your resume and the AI will read it and ask you relevant questions based on your skills and experience — just like a real HR interviewer.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💻</div>
+                <h3>Code Compiler</h3>
+                <p>Write and run code in Python, Java, C, C++ and JavaScript directly in the browser. Submit your code to AI for instant feedback and improvement tips.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>Dashboard AI Assistant</h3>
+                <p>A quick AI assistant right on your dashboard — ask anything, get instant answers, have a conversation without even starting a full session.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌙</div>
+                <h3>Dark & Light Theme</h3>
+                <p>Switch between dark and light themes across the entire platform. Your preference is saved and remembered across all pages automatically.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-it-works">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Get started in just 4 simple steps</p>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>Register</h4>
+                <p>Create your free account with email or sign in with Google</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>Dashboard</h4>
+                <p>Access your personal dashboard with AI assistant ready to help</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>Start Session</h4>
+                <p>Begin a voice conversation or upload your resume for interview prep</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h4>Learn & Grow</h4>
+                <p>Get instant feedback, improve your skills and ace your interviews</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview -->
+    <section class="preview">
+        <h2 class="section-title">See It In Action</h2>
+        <p class="section-subtitle">A powerful platform built for students</p>
+
+        <div class="preview-grid" style="margin-bottom: 50px;">
+            <div class="preview-text">
+                <h3>📊 Smart Dashboard</h3>
+                <p>Your personal hub with a built-in AI assistant that answers questions instantly via voice. No need to open a full session for quick queries.</p>
+                <ul class="preview-features">
+                    <li>Quick AI voice assistant</li>
+                    <li>Start full AI conversation</li>
+                    <li>Welcome message on arrival</li>
+                    <li>Dark and light theme toggle</li>
+                </ul>
+            </div>
+            <div class="preview-box">
+                <div class="preview-icon">📊</div>
+                <p>Dashboard with Quick AI Assistant, conversation starter and personalized welcome</p>
+            </div>
+        </div>
+
+        <div class="preview-grid">
+            <div class="preview-box">
+                <div class="preview-icon">🎤</div>
+                <p>Real-time voice AI with camera, code panel, resume upload and session timer</p>
+            </div>
+            <div class="preview-text">
+                <h3>🎤 AI Conversation Studio</h3>
+                <p>A full-featured studio for AI conversations with your camera on, voice detection, code panel and resume analysis all in one screen.</p>
+                <ul class="preview-features">
+                    <li>Real-time voice conversation</li>
+                    <li>Camera on/off toggle</li>
+                    <li>Code editor and compiler</li>
+                    <li>Resume upload and analysis</li>
+                    <li>Session timer</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <h2>Ready to <span>Get Started?</span></h2>
+        <p>Join thousands of students using AI Companion to prepare for their dream jobs</p>
+        <div class="hero-btns">
+            <a href="/register" class="hero-btn-main">🚀 Create Free Account</a>
+            <a href="/login" class="hero-btn-secondary">Already have account? Login</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Built with ❤️ by <span>AI Companion</span> — Empowering students with AI</p>
+    </footer>
+
+</body>
+</html>

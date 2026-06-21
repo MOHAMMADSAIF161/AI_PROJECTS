@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Companion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #16213e;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h2 { color: #4CAF50; }
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .container {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            gap: 20px;
+        }
+        .left-side { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .welcome-card {
+            background: #16213e;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #2a2a4a;
+        }
+        .welcome-card h3 { color: #4CAF50; font-size: 22px; margin-bottom: 8px; }
+        .welcome-card p { color: #aaa; font-size: 14px; }
+        .option-card {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid #2a2a4a;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .option-card:hover {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76,175,80,0.2);
+            transform: translateY(-3px);
+        }
+        .option-card .icon { font-size: 60px; margin-bottom: 15px; }
+        .option-card h4 { color: #4CAF50; margin-bottom: 12px; font-size: 20px; }
+        .option-card p { color: #aaa; font-size: 15px; margin-bottom: 20px; }
+        .option-btn {
+            padding: 12px 40px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            background: #4CAF50;
+            transition: background 0.3s;
+        }
+        .option-btn:hover { background: #45a049; }
+        .assistant-side {
+            width: 320px;
+            background: #16213e;
+            border-radius: 15px;
+            border: 1px solid #2a2a4a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .assistant-header {
+            background: #0d1117;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+        .assistant-header h4 { color: #4CAF50; }
+        .assistant-header p { color: #aaa; font-size: 12px; margin-top: 5px; }
+        .assistant-orb-area { padding: 20px; text-align: center; }
+        .mini-orb {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4CAF50, #1a1a2e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 20px rgba(76,175,80,0.4);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .mini-orb.listening {
+            background: radial-gradient(circle, #FF9800, #1a1a2e);
+            box-shadow: 0 0 30px rgba(255,152,0,0.6);
+            animation: pulse 1s infinite;
+        }
+        .mini-orb.thinking {
+            background: radial-gradient(circle, #2196F3, #1a1a2e);
+            box-shadow: 0 0 30px rgba(33,150,243,0.6);
+        }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .assistant-status { color: #aaa; font-size: 13px; margin-bottom: 10px; }
+        .chat-area {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+        }
+        .msg {
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 90%;
+        }
+        .ai-msg {
+            background: #0d1117;
+            color: #c9d1d9;
+            border-left: 3px solid #4CAF50;
+            align-self: flex-start;
+        }
+        .user-msg {
+            background: #1e3a5f;
+            color: white;
+            align-self: flex-end;
+            text-align: right;
+        }
+        .assistant-controls {
+            padding: 15px;
+            border-top: 1px solid #333;
+            text-align: center;
+        }
+        .mic-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mic-btn:hover { background: #45a049; }
+        .mic-btn.active { background: #f44336; animation: pulse 1s infinite; }
+        .assistant-hint { color: #555; font-size: 11px; margin-top: 8px; }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="header">
+        <a href="/" style="text-decoration:none;"><h2 style="color:#4CAF50;">🤖 AI Companion</h2></a>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <span style="color:#aaa; font-size:14px;">👋 Welcome, {{ student_name }}!</span>
+            <button id="theme-btn" onclick="toggleTheme()" style="background:#2a2a4a; border:1px solid #444; color:white; padding:8px 15px; border-radius:20px; cursor:pointer; font-size:13px;">☀️ Light</button>
+            <a href="/logout"><button class="logout-btn">Logout</button></a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="left-side">
+            <div class="welcome-card">
+                <h3>Hello, {{ student_name }}! 👋</h3>
+                <p>What would you like to do today? Choose an option below or talk to your AI assistant on the right.</p>
+            </div>
+            <div class="option-card">
+                <div class="icon">💬</div>
+                <h4>AI Conversation</h4>
+                <p>Have a full voice conversation with AI about any topic — technology, science, history, medicine and more!</p>
+                <form method="POST" action="/start">
+                    <button type="submit" class="option-btn">🎤 Start Conversation</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="assistant-side">
+            <div class="assistant-header">
+                <h4>🤖 Quick AI Assistant</h4>
+                <p>Ask me anything right here!</p>
+            </div>
+            <div class="assistant-orb-area">
+                <div class="mini-orb" id="mini-orb">🤖</div>
+                <div class="assistant-status" id="assistant-status">Click mic to talk</div>
+            </div>
+            <div class="chat-area" id="chat-area"></div>
+            <div class="assistant-controls">
+                <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+                <div class="assistant-hint">Click mic and speak</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let recognition;
+        let synth = window.speechSynthesis;
+        let isListening = false;
+        let isAISpeaking = false;
+
+        function setupRecognition() {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.onresult = function(e) {
+                const message = e.results[0][0].transcript;
+                addMessage(message, 'user');
+                stopListening();
+                sendMessage(message);
+            };
+            recognition.onerror = function() { stopListening(); };
+            recognition.onend = function() { stopListening(); };
+        }
+
+        function toggleMic() {
+            if (!recognition) setupRecognition();
+            if (isListening) { stopListening(); } else { startListening(); }
+        }
+
+        function startListening() {
+            if (isAISpeaking) return;
+            isListening = true;
+            document.getElementById('mic-btn').classList.add('active');
+            document.getElementById('mic-btn').innerText = '⏹';
+            document.getElementById('mini-orb').className = 'mini-orb listening';
+            document.getElementById('assistant-status').innerText = '🎤 Listening...';
+            recognition.start();
+        }
+
+        function stopListening() {
+            isListening = false;
+            document.getElementById('mic-btn').classList.remove('active');
+            document.getElementById('mic-btn').innerText = '🎤';
+            if (!isAISpeaking) {
+                document.getElementById('mini-orb').className = 'mini-orb';
+                document.getElementById('assistant-status').innerText = 'Click mic to talk';
+            }
+        }
+
+        function addMessage(text, type) {
+            const chatArea = document.getElementById('chat-area');
+            const div = document.createElement('div');
+            div.className = 'msg ' + (type === 'user' ? 'user-msg' : 'ai-msg');
+            div.innerText = type === 'user' ? '🗣️ ' + text : '🤖 ' + text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function speak(text) {
+            isAISpeaking = true;
+            synth.cancel();
+            document.getElementById('mini-orb').className = 'mini-orb';
+            document.getElementById('mini-orb').innerText = '🔊';
+            document.getElementById('assistant-status').innerText = '🤖 Speaking...';
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US';
+            u.rate = 0.9;
+            u.onend = function() {
+                isAISpeaking = false;
+                document.getElementById('mini-orb').className = 'mini-orb';
+                document.getElementById('mini-orb').innerText = '🤖';
+                document.getElementById('assistant-status').innerText = 'Click mic to talk';
+            };
+            synth.speak(u);
+        }
+
+        async function sendMessage(message) {
+            document.getElementById('mini-orb').className = 'mini-orb thinking';
+            document.getElementById('mini-orb').innerText = '⏳';
+            document.getElementById('assistant-status').innerText = 'Thinking...';
+            const res = await fetch('/dashboard-chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message})
+            });
+            const data = await res.json();
+            addMessage(data.reply, 'ai');
+            speak(data.reply);
+        }
+
+        // Theme
+        let isLight = localStorage.getItem('theme') === 'light';
+
+        function applyTheme() {
+            if (isLight) {
+                document.body.classList.add('light');
+                const btn = document.getElementById('theme-btn');
+                if (btn) btn.innerText = '🌙 Dark';
+            } else {
+                document.body.classList.remove('light');
+                const btn = document.getElementById('theme-btn');
+                if (btn) btn.innerText = '☀️ Light';
+            }
+        }
+
+        function toggleTheme() {
+            isLight = !isLight;
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            applyTheme();
+        }
+
+        window.onload = function() {
+            setupRecognition();
+            applyTheme();
+            const greeting = "Hi {{ student_name }}! I'm your quick assistant. Ask me anything!";
+            addMessage(greeting, 'ai');
+            speak(greeting);
+        };
+    </script>
+</body>
+</html>
