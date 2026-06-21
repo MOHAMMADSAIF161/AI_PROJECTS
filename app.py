@@ -11,8 +11,11 @@ from models import db, Student
 from flask_bcrypt import Bcrypt
 from ai import converse as chat, client, MODEL_NAME
 from authlib.integrations.flask_client import OAuth
+from werkzeug.middleware.proxy_fix import ProxyFix
 resume_store = {}
+
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.config.from_object(Config)
 db.init_app(app)
 bcrypt = Bcrypt(app)
