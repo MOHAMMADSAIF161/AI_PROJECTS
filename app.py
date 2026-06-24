@@ -28,8 +28,6 @@ google = oauth.register(
     client_kwargs={'scope': 'openid email profile'}
 )
 
-JDOODLE_CLIENT_ID = 'b07f25d3a1c03e35eb6b99f68d69a794'
-JDOODLE_CLIENT_SECRET = '2459387c5264a913e668112c97a237c29bf761f01998e2e0d0113e3638dfdac8'
 
 @app.route('/run-code', methods=['POST'])
 def run_code():
@@ -52,17 +50,19 @@ def run_code():
 
     if language == 'java':
         try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                fname = os.path.join(tmpdir, 'Main.java')
-                with open(fname, 'w') as f:
-                    f.write(code)
-                compile_result = subprocess.run(['javac', fname], capture_output=True, text=True, timeout=10)
-                if compile_result.returncode != 0:
-                    return jsonify({'run': {'output': '', 'stderr': compile_result.stderr}})
-                run_result = subprocess.run(['java', '-cp', tmpdir, 'Main'], capture_output=True, text=True, timeout=10)
-                return jsonify({'run': {'output': run_result.stdout, 'stderr': run_result.stderr}})
-        except subprocess.TimeoutExpired:
-            return jsonify({'run': {'output': '', 'stderr': 'Timed out!'}})
+            res = requests.post(
+                'https://api.jdoodle.com/v1/execute',
+                json={
+                    'clientId': os.getenv('JDOODLE_CLIENT_ID'),
+                    'clientSecret': os.getenv('JDOODLE_CLIENT_SECRET'),
+                    'script': code,
+                    'language': 'java',
+                    'versionIndex': '4'
+                },
+                timeout=15
+            )
+            result = res.json()
+            return jsonify({'run': {'output': result.get('output', ''), 'stderr': ''}})
         except Exception as e:
             return jsonify({'run': {'output': '', 'stderr': str(e)}})
 
@@ -83,8 +83,8 @@ def run_code():
         res = requests.post(
             'https://api.jdoodle.com/v1/execute',
             json={
-                'clientId': JDOODLE_CLIENT_ID,
-                'clientSecret': JDOODLE_CLIENT_SECRET,
+                'clientId': os.getenv('JDOODLE_CLIENT_ID'),
+                'clientSecret':  os.getenv('JDOODLE_CLIENT_SECRET'),
                 'script': code,
                 'language': jdoodle_lang,
                 'versionIndex': version_index
