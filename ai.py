@@ -17,10 +17,15 @@ Rules:
 - If student seems confused, explain simply
 - Match the student's energy and interest"""
 
-chat_history = []
+chat_histories = {}  # per student history
 
-def converse(student_message, resume_text=''):
-    global chat_history
+def converse(student_message, resume_text='', student_id=None):
+    global chat_histories
+
+    if student_id not in chat_histories:
+        chat_histories[student_id] = []
+
+    chat_history = chat_histories[student_id]
 
     if resume_text:
         system = f"""You are a professional interviewer conducting a voice interview based on the candidate's resume.
