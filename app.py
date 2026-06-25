@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from config import Config
 from models import db, Student
 from flask_bcrypt import Bcrypt
-from ai import converse as chat, client, MODEL_NAME
+from ai import converse as chat, client, MODEL_NAME, chat_histories
 from authlib.integrations.flask_client import OAuth
 from werkzeug.middleware.proxy_fix import ProxyFix
 resume_store = {}
@@ -107,16 +107,16 @@ def upload_resume():
         pdf_reader = PyPDF2.PdfReader(file)
         text = ''
         for page in pdf_reader.pages:
-            text += page.extract_text()
+            text += page.extract_text() or ''
         
         # Store in global dict using student id
         student_id = session.get('student_id')
         resume_store[student_id] = text
         print("Resume stored, length:", len(text))
         
-        from ai import chat_history
-        chat_history.clear()
-
+        from ai import chat_histories
+        chat_histories[student_id] = []
+        
         response = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
@@ -128,7 +128,9 @@ def upload_resume():
         message = response.choices[0].message.content.strip()
         return jsonify({'success': True, 'message': message})
     except Exception as e:
-        return jsonify({'error': str(e)})
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)})
 @app.route('/')
 def home():
     return render_template('welcome.html')
@@ -190,6 +192,8 @@ def dashboard():
 def start():
     if 'student_id' not in session:
         return redirect(url_for('login'))
+    student_id = session.get('student_id')
+    resume_store.pop(student_id, None)  # clear old resume
     return render_template('chat.html', student_name=session['student_name'])
 
 @app.route('/chat', methods=['POST'])
